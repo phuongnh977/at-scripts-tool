@@ -4,6 +4,7 @@ import Collections from '../views/Collections.vue'
 import Environments from '../views/Environments.vue'
 import Runner from '../views/Runner.vue'
 import Results from '../views/Results.vue'
+import Dashboard from '../views/Dashboard.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/results',
     name: 'Results',
     component: Results
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard
   }
 ]
 

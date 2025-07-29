@@ -8,6 +8,7 @@ A modern web application for running and managing Postman collections using Newm
 - 🌍 **Environment Variables** - Manage environment files with upload, edit, delete, and clone functionality
 - ▶️ **Real-time Runner** - Execute collections with live streaming results and SSE support
 - 📊 **Detailed Results** - View comprehensive test results with HTML-like reporting, including assertions, response data, and execution times
+- 📈 **Visual Dashboard** - Interactive charts showing test performance metrics, pass/fail rates, trends over time, and collection statistics
 - ⭐ **Default Collection** - Set a default collection for quick access in the Runner
 - 🎨 **Modern UI** - Clean Bootstrap 5 design with Vue 3 composition API
 - 📝 **Test Result Storage** - Persistent storage of test results with detailed execution history
@@ -60,6 +61,13 @@ npm start
    - Click "View" for detailed results
    - See assertions, response data, and timings
    - Delete old results or clear all
+
+6. **Dashboard Analytics**:
+   - Go to Dashboard page
+   - View overall test statistics and success rates
+   - Analyze pass/fail trends over time
+   - Compare collection performance
+   - Monitor average response times
 
 ## Quick Start Example
 
@@ -119,9 +127,10 @@ npm run dev
 ## Technologies Used
 
 - **Backend**: Node.js, Express.js, Newman
-- **Frontend**: Vue 3, Bootstrap 5, EJS
+- **Frontend**: Vue 3, Bootstrap 5, Chart.js, vue-chartjs
 - **Real-time**: Server-Sent Events (SSE)
 - **File Management**: Express-fileupload
+- **Data Visualization**: Chart.js with vue-chartjs wrapper
 
 ## Project Structure
 
@@ -135,7 +144,8 @@ newman-at/
 │   │   │   ├── Collections.vue  # Collection management
 │   │   │   ├── Environments.vue # Environment management
 │   │   │   ├── Runner.vue       # Test execution interface
-│   │   │   └── Results.vue      # Test results viewer
+│   │   │   ├── Results.vue      # Test results viewer
+│   │   │   └── Dashboard.vue    # Visual analytics dashboard
 │   │   ├── router/        # Vue Router configuration
 │   │   ├── services/      # API service layer
 │   │   │   ├── api.js           # Axios instance

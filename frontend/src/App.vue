@@ -35,6 +35,11 @@
                 <i class="bi bi-file-earmark-bar-graph"></i> Results
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/dashboard" exact-active-class="active">
+                <i class="bi bi-speedometer2"></i> Dashboard
+              </router-link>
+            </li>
           </ul>
         </div>
       </div>

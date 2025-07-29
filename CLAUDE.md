@@ -15,6 +15,7 @@ Newman AT is a modern Single Page Application (SPA) that provides a user-friendl
 - **UI Framework**: Bootstrap 5, Bootstrap Icons
 - **HTTP Client**: Axios
 - **Modal Management**: Bootstrap native modals
+- **Data Visualization**: Chart.js with vue-chartjs wrapper
 
 ### Backend
 - **Runtime**: Node.js
@@ -56,7 +57,7 @@ newman-at/
 ├── frontend/               # Vue 3 SPA
 │   ├── src/
 │   │   ├── components/    # Reusable Vue components
-│   │   ├── views/         # Page components (Home, Collections, Environments, Runner, Results)
+│   │   ├── views/         # Page components (Home, Collections, Environments, Runner, Results, Dashboard)
 │   │   ├── router/        # Vue Router configuration
 │   │   ├── services/      # API service layer (api.js, collections.js, environments.js, newman.js, results.js, settings.js)
 │   │   ├── App.vue        # Root component with layout
@@ -149,6 +150,7 @@ All endpoints are prefixed with `/api`:
 - **Environments.vue**: Environment variable management with full CRUD and clone functionality
 - **Runner.vue**: Test execution interface with real-time SSE logs and auto-select default collection
 - **Results.vue**: Comprehensive test results viewer with detailed assertions and response data
+- **Dashboard.vue**: Visual analytics dashboard with interactive charts showing test performance metrics
 - **App.vue**: Main layout with Bootstrap navbar and router outlet
 
 ### Backend Routes
@@ -203,6 +205,13 @@ All endpoints are prefixed with `/api`:
    - Improved button grouping and spacing
    - Added "Manage Environments" button to home page
    - Better visual feedback for all operations
+
+6. **Visual Dashboard**
+   - Interactive charts using Chart.js and vue-chartjs
+   - Overall test statistics with pass/fail rates
+   - Test trends visualization over time
+   - Collection performance comparison
+   - Average response time analysis
 
 # important-instruction-reminders
 Do what has been asked; nothing more, nothing less.

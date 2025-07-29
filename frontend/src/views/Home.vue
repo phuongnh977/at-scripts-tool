@@ -13,6 +13,9 @@
             <router-link class="btn btn-primary btn-lg" to="/runner" role="button">
               <i class="bi bi-play-fill"></i> Start Testing
             </router-link>
+            <router-link class="btn btn-outline-primary btn-lg" to="/dashboard" role="button">
+              <i class="bi bi-speedometer2"></i> View Dashboard
+            </router-link>
             <router-link class="btn btn-outline-primary btn-lg" to="/collections" role="button">
               <i class="bi bi-collection"></i> Manage Collections
             </router-link>
