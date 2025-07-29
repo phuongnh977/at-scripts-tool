@@ -1,0 +1,13 @@
+node_modules/
+.env
+.DS_Store
+*.log
+npm-debug.log*
+backend/collections/*
+backend/environments/*
+!backend/collections/.gitkeep
+!backend/environments/.gitkeep
+uploads/
+.vscode/
+.idea/
+frontend/dist/
