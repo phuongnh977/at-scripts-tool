@@ -76,4 +76,38 @@ router.delete('/:filename', async (req, res) => {
     }
 });
 
+router.post('/:filename/clone', async (req, res) => {
+    try {
+        const sourceFilePath = path.join(collectionsPath, req.params.filename);
+        const content = await fs.readFile(sourceFilePath, 'utf8');
+        const collection = JSON.parse(content);
+        
+        // Update collection info
+        const originalName = collection.info?.name || 'Collection';
+        collection.info = collection.info || {};
+        collection.info.name = `${originalName} - Copy`;
+        collection.info._postman_id = `cloned-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Generate new filename
+        const timestamp = Date.now();
+        const newFilename = `${timestamp}-cloned-collection.json`;
+        const newFilePath = path.join(collectionsPath, newFilename);
+        
+        // Write the cloned collection
+        await fs.writeFile(newFilePath, JSON.stringify(collection, null, 2));
+        
+        res.json({ 
+            message: 'Collection cloned successfully', 
+            filename: newFilename,
+            name: collection.info.name
+        });
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            res.status(404).json({ error: 'Collection not found' });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
+});
+
 module.exports = router;

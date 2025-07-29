@@ -1,0 +1,434 @@
+{
+  "id": "result-1753803377249-g4xiodtui",
+  "collection": "simple-api-tests.json",
+  "environment": "newman-at-local.json",
+  "timestamp": "2025-07-29T15:36:18.059Z",
+  "stats": {
+    "duration": 810,
+    "iterations": {
+      "total": 1,
+      "pending": 0,
+      "failed": 0
+    },
+    "requests": {
+      "total": 4,
+      "pending": 0,
+      "failed": 0
+    },
+    "tests": {
+      "total": 4,
+      "pending": 0,
+      "failed": 0
+    },
+    "assertions": {
+      "total": 10,
+      "pending": 0,
+      "failed": 0
+    },
+    "testScripts": {
+      "total": 4,
+      "pending": 0,
+      "failed": 0
+    },
+    "prerequestScripts": {
+      "total": 0,
+      "pending": 0,
+      "failed": 0
+    }
+  },
+  "failures": [],
+  "executions": [
+    {
+      "item": {
+        "name": "API Health Check",
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:3000/api/health",
+          "headers": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "4af1fee2-e943-455f-b37e-15169feab1be",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ]
+        }
+      },
+      "response": {
+        "code": 200,
+        "status": "OK",
+        "responseTime": 71,
+        "headers": [
+          {
+            "key": "X-Powered-By",
+            "value": "Express"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=utf-8"
+          },
+          {
+            "key": "Content-Length",
+            "value": "52"
+          },
+          {
+            "key": "ETag",
+            "value": "W/\"34-7Y+GhsSQxyujdSDn37Y/Tuy9mo8\""
+          },
+          {
+            "key": "Date",
+            "value": "Tue, 29 Jul 2025 15:36:17 GMT"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Keep-Alive",
+            "value": "timeout=5"
+          }
+        ],
+        "body": "{\"status\":\"ok\",\"message\":\"Newman AT API is running\"}"
+      },
+      "assertions": [
+        {
+          "assertion": "Status code is 200",
+          "error": null
+        },
+        {
+          "assertion": "Response has status ok",
+          "error": null
+        },
+        {
+          "assertion": "Response time is less than 500ms",
+          "error": null
+        }
+      ]
+    },
+    {
+      "item": {
+        "name": "Get All Collections",
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:3000/api/collections",
+          "headers": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "7df69512-99cb-44e6-b939-a60cc1809e09",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ]
+        }
+      },
+      "response": {
+        "code": 200,
+        "status": "OK",
+        "responseTime": 9,
+        "headers": [
+          {
+            "key": "X-Powered-By",
+            "value": "Express"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=utf-8"
+          },
+          {
+            "key": "Content-Length",
+            "value": "179"
+          },
+          {
+            "key": "ETag",
+            "value": "W/\"b3-UbtMVJTvcGLLmMtf+a9mrgBZXBM\""
+          },
+          {
+            "key": "Date",
+            "value": "Tue, 29 Jul 2025 15:36:17 GMT"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Keep-Alive",
+            "value": "timeout=5"
+          }
+        ],
+        "body": "[{\"filename\":\"simple-api-tests.json\",\"name\":\"Simple Newman AT API Tests\",\"description\":\"Basic GET request tests for Newman AT backend API\",\"updatedAt\":\"2025-07-29T15:35:34.000Z\"}]"
+      },
+      "assertions": [
+        {
+          "assertion": "Status code is 200",
+          "error": null
+        },
+        {
+          "assertion": "Response is an array",
+          "error": null
+        },
+        {
+          "assertion": "Response time is acceptable",
+          "error": null
+        }
+      ]
+    },
+    {
+      "item": {
+        "name": "Get All Environments",
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:3000/api/environments",
+          "headers": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "562909a8-d05e-4a4b-9b9c-df13f2ff7217",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ]
+        }
+      },
+      "response": {
+        "code": 200,
+        "status": "OK",
+        "responseTime": 10,
+        "headers": [
+          {
+            "key": "X-Powered-By",
+            "value": "Express"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=utf-8"
+          },
+          {
+            "key": "Content-Length",
+            "value": "124"
+          },
+          {
+            "key": "ETag",
+            "value": "W/\"7c-1D7R4xyP6LU3ZLiAoY32dnTQcvs\""
+          },
+          {
+            "key": "Date",
+            "value": "Tue, 29 Jul 2025 15:36:17 GMT"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Keep-Alive",
+            "value": "timeout=5"
+          }
+        ],
+        "body": "[{\"filename\":\"newman-at-local.json\",\"name\":\"Newman AT Local Development\",\"values\":4,\"updatedAt\":\"2025-07-29T15:17:36.000Z\"}]"
+      },
+      "assertions": [
+        {
+          "assertion": "Status code is 200",
+          "error": null
+        },
+        {
+          "assertion": "Response is an array",
+          "error": null
+        }
+      ]
+    },
+    {
+      "item": {
+        "name": "Get All Results",
+        "request": {
+          "method": "GET",
+          "url": "http://localhost:3000/api/results",
+          "headers": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c2acaa98-dd01-4c16-b8e2-aebfaac3a9f2",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ]
+        }
+      },
+      "response": {
+        "code": 200,
+        "status": "OK",
+        "responseTime": 27,
+        "headers": [
+          {
+            "key": "X-Powered-By",
+            "value": "Express"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=utf-8"
+          },
+          {
+            "key": "Content-Length",
+            "value": "478"
+          },
+          {
+            "key": "ETag",
+            "value": "W/\"1de-GEwC9kfZ8pNFYOiXz5M/5ox3qmI\""
+          },
+          {
+            "key": "Date",
+            "value": "Tue, 29 Jul 2025 15:36:18 GMT"
+          },
+          {
+            "key": "Connection",
+            "value": "keep-alive"
+          },
+          {
+            "key": "Keep-Alive",
+            "value": "timeout=5"
+          }
+        ],
+        "body": "[{\"id\":\"result-1753802833180-mvcjd22e3\",\"collection\":\"newman-at-api-tests.json\",\"environment\":\"newman-at-local.json\",\"stats\":{\"duration\":1619,\"iterations\":{\"total\":1,\"pending\":0,\"failed\":0},\"requests\":{\"total\":13,\"pending\":0,\"failed\":0},\"tests\":{\"total\":13,\"pending\":0,\"failed\":0},\"assertions\":{\"total\":26,\"pending\":0,\"failed\":18},\"testScripts\":{\"total\":26,\"pending\":0,\"failed\":0},\"prerequestScripts\":{\"total\":15,\"pending\":0,\"failed\":0}},\"timestamp\":\"2025-07-29T15:27:14.799Z\"}]"
+      },
+      "assertions": [
+        {
+          "assertion": "Status code is 200",
+          "error": null
+        },
+        {
+          "assertion": "Response is an array",
+          "error": null
+        }
+      ]
+    }
+  ]
+}

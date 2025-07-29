@@ -76,4 +76,37 @@ router.delete('/:filename', async (req, res) => {
     }
 });
 
+router.post('/:filename/clone', async (req, res) => {
+    try {
+        const sourceFilePath = path.join(environmentsPath, req.params.filename);
+        const content = await fs.readFile(sourceFilePath, 'utf8');
+        const environment = JSON.parse(content);
+        
+        // Update environment info
+        const originalName = environment.name || 'Environment';
+        environment.name = `${originalName} - Copy`;
+        environment.id = `cloned-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Generate new filename
+        const timestamp = Date.now();
+        const newFilename = `${timestamp}-cloned-environment.json`;
+        const newFilePath = path.join(environmentsPath, newFilename);
+        
+        // Write the cloned environment
+        await fs.writeFile(newFilePath, JSON.stringify(environment, null, 2));
+        
+        res.json({ 
+            message: 'Environment cloned successfully', 
+            filename: newFilename,
+            name: environment.name
+        });
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            res.status(404).json({ error: 'Environment not found' });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
+});
+
 module.exports = router;

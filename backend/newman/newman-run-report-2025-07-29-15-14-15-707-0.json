@@ -1,0 +1,4301 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "user-api-001"
+    },
+    "item": [
+      {
+        "id": "c2a434fc-bb2e-4ebb-a1e0-635691544b15",
+        "name": "Authentication",
+        "item": [
+          {
+            "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+            "name": "Login User",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "login"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has auth token\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('token');",
+                    "});",
+                    "",
+                    "pm.test(\"Response time is less than 500ms\", function () {",
+                    "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+                }
+              }
+            ]
+          },
+          {
+            "id": "2b8a902a-9732-4777-b500-53957b81b25f",
+            "name": "Refresh Token",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "auth",
+                  "refresh"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "{{auth_token}}"
+                }
+              ],
+              "method": "POST"
+            },
+            "response": [],
+            "event": []
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "b0deedce-de2b-4213-a617-6ca162a71a2f",
+        "name": "User Management",
+        "item": [
+          {
+            "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+            "name": "Get All Users",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "users"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [
+                  {
+                    "key": "page",
+                    "value": "1"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "{{auth_token}}"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "c807ef76-7410-439a-a026-e000523d4590",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"Status code is 200\", function () {",
+                    "    pm.response.to.have.status(200);",
+                    "});",
+                    "",
+                    "pm.test(\"Response is an array\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.be.an('array');",
+                    "});",
+                    "",
+                    "pm.test(\"Each user has required fields\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    jsonData.forEach(function(user) {",
+                    "        pm.expect(user).to.have.property('id');",
+                    "        pm.expect(user).to.have.property('username');",
+                    "        pm.expect(user).to.have.property('email');",
+                    "    });",
+                    "});"
+                  ],
+                  "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+                }
+              }
+            ]
+          },
+          {
+            "id": "143aaa65-46c3-45f6-a801-50b551911991",
+            "name": "Create New User",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "users"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "{{auth_token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"Status code is 201\", function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test(\"User created successfully\", function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                    "});"
+                  ],
+                  "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+                }
+              }
+            ]
+          },
+          {
+            "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+            "name": "Update User",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "users",
+                  "123"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "{{auth_token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "PUT",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+              }
+            },
+            "response": [],
+            "event": []
+          },
+          {
+            "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+            "name": "Delete User",
+            "request": {
+              "url": {
+                "path": [
+                  "api",
+                  "users",
+                  "123"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "{{auth_token}}"
+                }
+              ],
+              "method": "DELETE"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test(\"Status code is 204\", function () {",
+                    "    pm.response.to.have.status(204);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "string",
+        "value": "",
+        "key": "user_id"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "temp_token"
+      }
+    ],
+    "info": {
+      "_postman_id": "user-api-001",
+      "name": "User API Tests",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Collection for testing user management endpoints",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_at": "2025-01-29T10:00:00.000Z",
+      "postman_exported_using": "Postman/10.0.0"
+    },
+    "id": "dev-env-001",
+    "name": "Development Environment",
+    "values": [
+      {
+        "type": "any",
+        "value": "https://api.dev.example.com",
+        "key": "base_url"
+      },
+      {
+        "type": "any",
+        "value": "dev_key_12345",
+        "key": "api_key"
+      },
+      {
+        "type": "any",
+        "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev",
+        "key": "auth_token"
+      },
+      {
+        "type": "any",
+        "value": "5000",
+        "key": "timeout"
+      },
+      {
+        "type": "any",
+        "value": "true",
+        "key": "debug_mode"
+      }
+    ]
+  },
+  "globals": {
+    "id": "3dbfab70-f01f-4891-848e-6531cd479802",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 6,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 4,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 6,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 6,
+        "pending": 0,
+        "failed": 6
+      },
+      "tests": {
+        "total": 6,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 9,
+        "pending": 0,
+        "failed": 9
+      },
+      "testScripts": {
+        "total": 4,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 0,
+      "responseMin": 0,
+      "responseMax": 0,
+      "responseSd": 0,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1753801924141,
+      "completed": 1753802055697
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 6,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "4eb705ca-6a2b-4662-865c-75745b9d4ac7",
+          "httpRequestId": "bf10c453-d168-4f4e-965e-d36522aeb236"
+        },
+        "item": {
+          "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+          "name": "Login User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has auth token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ],
+                "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "api",
+              "dev",
+              "example",
+              "com"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "d5403cfa-3a2f-4ea2-972a-4b7549995836",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.dev.example.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+          }
+        },
+        "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+        "requestError": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status code is 200",
+              "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+              "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:1)"
+            }
+          },
+          {
+            "assertion": "Response has auth token",
+            "skipped": false,
+            "error": {
+              "name": "JSONError",
+              "index": 1,
+              "test": "Response has auth token",
+              "message": "\"undefined\" is not valid JSON",
+              "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:2:1)"
+            }
+          },
+          {
+            "assertion": "Response time is less than 500ms",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 2,
+              "test": "Response time is less than 500ms",
+              "message": "expected undefined to be a number or a date",
+              "stack": "AssertionError: expected undefined to be a number or a date\n   at Object.eval sandbox-script.js:3:1)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "7286cbc1-344c-4019-b1ee-b272bd48ac75",
+          "length": 6,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "84dd9577-44d2-4755-9124-6700cdab4254"
+        },
+        "item": {
+          "id": "2b8a902a-9732-4777-b500-53957b81b25f",
+          "name": "Refresh Token",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "api",
+              "auth",
+              "refresh"
+            ],
+            "host": [
+              "api",
+              "dev",
+              "example",
+              "com"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "149ce064-8912-498e-b148-02a14493be7d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.dev.example.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "POST"
+        },
+        "id": "2b8a902a-9732-4777-b500-53957b81b25f",
+        "requestError": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443
+        }
+      },
+      {
+        "cursor": {
+          "ref": "3b62b374-480c-43fd-9dba-1f41d3dacf3d",
+          "length": 6,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "310a33f6-bc87-4a71-93d4-46f0a212d962"
+        },
+        "item": {
+          "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+          "name": "Get All Users",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c807ef76-7410-439a-a026-e000523d4590",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Each user has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function(user) {",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "    });",
+                  "});"
+                ],
+                "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "api",
+              "users"
+            ],
+            "host": [
+              "api",
+              "dev",
+              "example",
+              "com"
+            ],
+            "query": [
+              {
+                "key": "page",
+                "value": "1"
+              },
+              {
+                "key": "limit",
+                "value": "10"
+              }
+            ],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "504f79e4-166a-44ec-ae6a-7593d1e3dca8",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.dev.example.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+        "requestError": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 200",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status code is 200",
+              "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+              "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:3)"
+            }
+          },
+          {
+            "assertion": "Response is an array",
+            "skipped": false,
+            "error": {
+              "name": "JSONError",
+              "index": 1,
+              "test": "Response is an array",
+              "message": "\"undefined\" is not valid JSON",
+              "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:2:3)"
+            }
+          },
+          {
+            "assertion": "Each user has required fields",
+            "skipped": false,
+            "error": {
+              "name": "JSONError",
+              "index": 2,
+              "test": "Each user has required fields",
+              "message": "\"undefined\" is not valid JSON",
+              "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:3:3)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "48b3bd50-15b6-47ce-9ca3-1a6a4e90c1db",
+          "length": 6,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "dec0d9a1-498a-474e-a92e-a4f596c8ad06"
+        },
+        "item": {
+          "id": "143aaa65-46c3-45f6-a801-50b551911991",
+          "name": "Create New User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"User created successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                  "});"
+                ],
+                "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "api",
+              "users"
+            ],
+            "host": [
+              "api",
+              "dev",
+              "example",
+              "com"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "2b7b68cf-24fe-4cbe-b655-0e97247ab909",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.dev.example.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"username\": \"newuser_1753801990\",\n    \"email\": \"newuser1753801990@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+          }
+        },
+        "id": "143aaa65-46c3-45f6-a801-50b551911991",
+        "requestError": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 201",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status code is 201",
+              "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+              "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:4)"
+            }
+          },
+          {
+            "assertion": "User created successfully",
+            "skipped": false,
+            "error": {
+              "name": "JSONError",
+              "index": 1,
+              "test": "User created successfully",
+              "message": "\"undefined\" is not valid JSON",
+              "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:2:4)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "acb70cce-a1d4-43cb-b673-c1b9b67faa03",
+          "length": 6,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "c72fb983-6400-4681-ac02-bac56a7e676d"
+        },
+        "item": {
+          "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+          "name": "Update User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "123"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "api",
+              "users",
+              "123"
+            ],
+            "host": [
+              "api",
+              "dev",
+              "example",
+              "com"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "87871f0c-c94c-4d6b-9ab5-2acfad9daf0f",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.dev.example.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "PUT",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+          }
+        },
+        "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+        "requestError": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443
+        }
+      },
+      {
+        "cursor": {
+          "ref": "a5e485eb-376c-4fc8-a05f-ac5562c20ecb",
+          "length": 6,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "dbaae661-1cd2-49ff-8049-ae340d1e806a"
+        },
+        "item": {
+          "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+          "name": "Delete User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "123"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "https",
+            "path": [
+              "api",
+              "users",
+              "123"
+            ],
+            "host": [
+              "api",
+              "dev",
+              "example",
+              "com"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "951d7e3f-6e96-488c-8b6e-0c5435ae3c55",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "api.dev.example.com",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "DELETE"
+        },
+        "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+        "requestError": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443
+        },
+        "assertions": [
+          {
+            "assertion": "Status code is 204",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status code is 204",
+              "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+              "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:6)"
+            }
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 0
+    },
+    "failures": [
+      {
+        "error": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443,
+          "name": "Error",
+          "message": "connect ETIMEDOUT 125.235.4.59:443",
+          "stack": "Error: connect ETIMEDOUT 125.235.4.59:443\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1606:16)",
+          "checksum": "37e772173f271bfeb6a881787b575968",
+          "id": "be9f087e-df13-470d-8d79-ee2098de9a01",
+          "timestamp": 1753801946116,
+          "stacktrace": [
+            {
+              "fileName": "node:net",
+              "lineNumber": 1606,
+              "functionName": "TCPConnectWrap.afterConnect [as oncomplete]",
+              "typeName": "TCPConnectWrap",
+              "methodName": "afterConnect [as oncomplete]",
+              "columnNumber": 16,
+              "native": false
+            }
+          ]
+        },
+        "at": "request",
+        "source": {
+          "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+          "name": "Login User",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "api",
+                "dev",
+                "example",
+                "com"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.1",
+                "system": true
+              },
+              {
+                "key": "Accept",
+                "value": "*/*",
+                "system": true
+              },
+              {
+                "key": "Cache-Control",
+                "value": "no-cache",
+                "system": true
+              },
+              {
+                "key": "Postman-Token",
+                "value": "d5403cfa-3a2f-4ea2-972a-4b7549995836",
+                "system": true
+              },
+              {
+                "key": "Host",
+                "value": "api.dev.example.com",
+                "system": true
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br",
+                "system": true
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive",
+                "system": true
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has auth token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 6,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "4eb705ca-6a2b-4662-865c-75745b9d4ac7",
+          "httpRequestId": "bf10c453-d168-4f4e-965e-d36522aeb236"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status code is 200",
+          "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+          "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:1)",
+          "checksum": "8f1a38fbb4708623aafe992d2647a097",
+          "id": "84658d10-1568-4a97-87a3-dbbefd385905",
+          "timestamp": 1753801946159,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+          "name": "Login User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has auth token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ],
+                "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "c2a434fc-bb2e-4ebb-a1e0-635691544b15",
+          "name": "Authentication",
+          "item": [
+            {
+              "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+              "name": "Login User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response has auth token\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('token');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is less than 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "2b8a902a-9732-4777-b500-53957b81b25f",
+              "name": "Refresh Token",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "auth",
+                    "refresh"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "POST"
+              },
+              "response": [],
+              "event": []
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 6,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "4eb705ca-6a2b-4662-865c-75745b9d4ac7",
+          "httpRequestId": "bf10c453-d168-4f4e-965e-d36522aeb236",
+          "scriptId": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+          "execution": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+        }
+      },
+      {
+        "error": {
+          "name": "JSONError",
+          "index": 1,
+          "test": "Response has auth token",
+          "message": "\"undefined\" is not valid JSON",
+          "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:2:1)",
+          "checksum": "ed42393e3cc5d0938de7b3e54dba7f7f",
+          "id": "49625be2-d6e1-4c9b-b593-fbcd9572f8a2",
+          "timestamp": 1753801946162,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 2,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:1 in test-script",
+        "source": {
+          "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+          "name": "Login User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has auth token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ],
+                "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "c2a434fc-bb2e-4ebb-a1e0-635691544b15",
+          "name": "Authentication",
+          "item": [
+            {
+              "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+              "name": "Login User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response has auth token\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('token');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is less than 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "2b8a902a-9732-4777-b500-53957b81b25f",
+              "name": "Refresh Token",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "auth",
+                    "refresh"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "POST"
+              },
+              "response": [],
+              "event": []
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 6,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "4eb705ca-6a2b-4662-865c-75745b9d4ac7",
+          "httpRequestId": "bf10c453-d168-4f4e-965e-d36522aeb236",
+          "scriptId": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+          "execution": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 2,
+          "test": "Response time is less than 500ms",
+          "message": "expected undefined to be a number or a date",
+          "stack": "AssertionError: expected undefined to be a number or a date\n   at Object.eval sandbox-script.js:3:1)",
+          "checksum": "db51ed2f032a5488ab694e9f5237effb",
+          "id": "dc00bac7-f47a-44a9-901a-d831f8cb57d9",
+          "timestamp": 1753801946165,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 3,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:2 in test-script",
+        "source": {
+          "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+          "name": "Login User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has auth token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "});",
+                  "",
+                  "pm.test(\"Response time is less than 500ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ],
+                "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "c2a434fc-bb2e-4ebb-a1e0-635691544b15",
+          "name": "Authentication",
+          "item": [
+            {
+              "id": "389aaadd-f3b3-4c0a-861e-882a8e1c26b1",
+              "name": "Login User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "auth",
+                    "login"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"Test123!\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response has auth token\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property('token');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is less than 500ms\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "2b8a902a-9732-4777-b500-53957b81b25f",
+              "name": "Refresh Token",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "auth",
+                    "refresh"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "POST"
+              },
+              "response": [],
+              "event": []
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 6,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "4eb705ca-6a2b-4662-865c-75745b9d4ac7",
+          "httpRequestId": "bf10c453-d168-4f4e-965e-d36522aeb236",
+          "scriptId": "d4374f66-0e19-41d9-b747-b9ae1a6b0868",
+          "execution": "a2f3f8af-817e-446a-97fe-fe2b54371980"
+        }
+      },
+      {
+        "error": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443,
+          "name": "Error",
+          "message": "connect ETIMEDOUT 125.235.4.59:443",
+          "stack": "Error: connect ETIMEDOUT 125.235.4.59:443\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1606:16)",
+          "checksum": "37e772173f271bfeb6a881787b575968",
+          "id": "994672b3-3f22-4ea2-81c1-3fc8030829cf",
+          "timestamp": 1753801968098,
+          "stacktrace": [
+            {
+              "fileName": "node:net",
+              "lineNumber": 1606,
+              "functionName": "TCPConnectWrap.afterConnect [as oncomplete]",
+              "typeName": "TCPConnectWrap",
+              "methodName": "afterConnect [as oncomplete]",
+              "columnNumber": 16,
+              "native": false
+            }
+          ]
+        },
+        "at": "request",
+        "source": {
+          "id": "2b8a902a-9732-4777-b500-53957b81b25f",
+          "name": "Refresh Token",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "api",
+                "auth",
+                "refresh"
+              ],
+              "host": [
+                "api",
+                "dev",
+                "example",
+                "com"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.1",
+                "system": true
+              },
+              {
+                "key": "Accept",
+                "value": "*/*",
+                "system": true
+              },
+              {
+                "key": "Cache-Control",
+                "value": "no-cache",
+                "system": true
+              },
+              {
+                "key": "Postman-Token",
+                "value": "149ce064-8912-498e-b148-02a14493be7d",
+                "system": true
+              },
+              {
+                "key": "Host",
+                "value": "api.dev.example.com",
+                "system": true
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br",
+                "system": true
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive",
+                "system": true
+              }
+            ],
+            "method": "POST"
+          },
+          "response": [],
+          "event": []
+        },
+        "cursor": {
+          "ref": "7286cbc1-344c-4019-b1ee-b272bd48ac75",
+          "length": 6,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "84dd9577-44d2-4755-9124-6700cdab4254"
+        }
+      },
+      {
+        "error": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443,
+          "name": "Error",
+          "message": "connect ETIMEDOUT 125.235.4.59:443",
+          "stack": "Error: connect ETIMEDOUT 125.235.4.59:443\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1606:16)",
+          "checksum": "37e772173f271bfeb6a881787b575968",
+          "id": "001bb468-abd3-4704-99a0-0569a5e934e6",
+          "timestamp": 1753801989466,
+          "stacktrace": [
+            {
+              "fileName": "node:net",
+              "lineNumber": 1606,
+              "functionName": "TCPConnectWrap.afterConnect [as oncomplete]",
+              "typeName": "TCPConnectWrap",
+              "methodName": "afterConnect [as oncomplete]",
+              "columnNumber": 16,
+              "native": false
+            }
+          ]
+        },
+        "at": "request",
+        "source": {
+          "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+          "name": "Get All Users",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "api",
+                "dev",
+                "example",
+                "com"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.1",
+                "system": true
+              },
+              {
+                "key": "Accept",
+                "value": "*/*",
+                "system": true
+              },
+              {
+                "key": "Cache-Control",
+                "value": "no-cache",
+                "system": true
+              },
+              {
+                "key": "Postman-Token",
+                "value": "504f79e4-166a-44ec-ae6a-7593d1e3dca8",
+                "system": true
+              },
+              {
+                "key": "Host",
+                "value": "api.dev.example.com",
+                "system": true
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br",
+                "system": true
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive",
+                "system": true
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c807ef76-7410-439a-a026-e000523d4590",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Each user has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function(user) {",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        "cursor": {
+          "ref": "3b62b374-480c-43fd-9dba-1f41d3dacf3d",
+          "length": 6,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "310a33f6-bc87-4a71-93d4-46f0a212d962"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status code is 200",
+          "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+          "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:3)",
+          "checksum": "470ce06f8bb94c3fa9bc0a37723a5549",
+          "id": "55046dd8-112a-43d2-aada-99256fbd924f",
+          "timestamp": 1753801989477,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 3,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+          "name": "Get All Users",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c807ef76-7410-439a-a026-e000523d4590",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Each user has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function(user) {",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "    });",
+                  "});"
+                ],
+                "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "b0deedce-de2b-4213-a617-6ca162a71a2f",
+          "name": "User Management",
+          "item": [
+            {
+              "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+              "name": "Get All Users",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c807ef76-7410-439a-a026-e000523d4590",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Each user has required fields\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    jsonData.forEach(function(user) {",
+                      "        pm.expect(user).to.have.property('id');",
+                      "        pm.expect(user).to.have.property('username');",
+                      "        pm.expect(user).to.have.property('email');",
+                      "    });",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "143aaa65-46c3-45f6-a801-50b551911991",
+              "name": "Create New User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"User created successfully\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+              "name": "Update User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+                }
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+              "name": "Delete User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {",
+                      "    pm.response.to.have.status(204);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "3b62b374-480c-43fd-9dba-1f41d3dacf3d",
+          "length": 6,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "310a33f6-bc87-4a71-93d4-46f0a212d962",
+          "scriptId": "c807ef76-7410-439a-a026-e000523d4590",
+          "execution": "c83f9909-d25a-47d4-83dd-5991313142b1"
+        }
+      },
+      {
+        "error": {
+          "name": "JSONError",
+          "index": 1,
+          "test": "Response is an array",
+          "message": "\"undefined\" is not valid JSON",
+          "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:2:3)",
+          "checksum": "8ef1228f0832919830b339b60710c5f4",
+          "id": "dbc0fb30-2b78-4671-ae6e-17badef75634",
+          "timestamp": 1753801989479,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 2,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 3,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:1 in test-script",
+        "source": {
+          "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+          "name": "Get All Users",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c807ef76-7410-439a-a026-e000523d4590",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Each user has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function(user) {",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "    });",
+                  "});"
+                ],
+                "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "b0deedce-de2b-4213-a617-6ca162a71a2f",
+          "name": "User Management",
+          "item": [
+            {
+              "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+              "name": "Get All Users",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c807ef76-7410-439a-a026-e000523d4590",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Each user has required fields\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    jsonData.forEach(function(user) {",
+                      "        pm.expect(user).to.have.property('id');",
+                      "        pm.expect(user).to.have.property('username');",
+                      "        pm.expect(user).to.have.property('email');",
+                      "    });",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "143aaa65-46c3-45f6-a801-50b551911991",
+              "name": "Create New User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"User created successfully\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+              "name": "Update User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+                }
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+              "name": "Delete User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {",
+                      "    pm.response.to.have.status(204);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "3b62b374-480c-43fd-9dba-1f41d3dacf3d",
+          "length": 6,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "310a33f6-bc87-4a71-93d4-46f0a212d962",
+          "scriptId": "c807ef76-7410-439a-a026-e000523d4590",
+          "execution": "c83f9909-d25a-47d4-83dd-5991313142b1"
+        }
+      },
+      {
+        "error": {
+          "name": "JSONError",
+          "index": 2,
+          "test": "Each user has required fields",
+          "message": "\"undefined\" is not valid JSON",
+          "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:3:3)",
+          "checksum": "d2097352bf4bac55734f296d1394aefa",
+          "id": "d8380375-aff1-4cee-9142-8004e8258a81",
+          "timestamp": 1753801989480,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 3,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 3,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:2 in test-script",
+        "source": {
+          "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+          "name": "Get All Users",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c807ef76-7410-439a-a026-e000523d4590",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Each user has required fields\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    jsonData.forEach(function(user) {",
+                  "        pm.expect(user).to.have.property('id');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('email');",
+                  "    });",
+                  "});"
+                ],
+                "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "b0deedce-de2b-4213-a617-6ca162a71a2f",
+          "name": "User Management",
+          "item": [
+            {
+              "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+              "name": "Get All Users",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c807ef76-7410-439a-a026-e000523d4590",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Each user has required fields\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    jsonData.forEach(function(user) {",
+                      "        pm.expect(user).to.have.property('id');",
+                      "        pm.expect(user).to.have.property('username');",
+                      "        pm.expect(user).to.have.property('email');",
+                      "    });",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "143aaa65-46c3-45f6-a801-50b551911991",
+              "name": "Create New User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"User created successfully\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+              "name": "Update User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+                }
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+              "name": "Delete User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {",
+                      "    pm.response.to.have.status(204);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "3b62b374-480c-43fd-9dba-1f41d3dacf3d",
+          "length": 6,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "310a33f6-bc87-4a71-93d4-46f0a212d962",
+          "scriptId": "c807ef76-7410-439a-a026-e000523d4590",
+          "execution": "c83f9909-d25a-47d4-83dd-5991313142b1"
+        }
+      },
+      {
+        "error": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443,
+          "name": "Error",
+          "message": "connect ETIMEDOUT 125.235.4.59:443",
+          "stack": "Error: connect ETIMEDOUT 125.235.4.59:443\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1606:16)",
+          "checksum": "37e772173f271bfeb6a881787b575968",
+          "id": "e24e0563-8b41-49a7-95b7-e84501894879",
+          "timestamp": 1753802011647,
+          "stacktrace": [
+            {
+              "fileName": "node:net",
+              "lineNumber": 1606,
+              "functionName": "TCPConnectWrap.afterConnect [as oncomplete]",
+              "typeName": "TCPConnectWrap",
+              "methodName": "afterConnect [as oncomplete]",
+              "columnNumber": 16,
+              "native": false
+            }
+          ]
+        },
+        "at": "request",
+        "source": {
+          "id": "143aaa65-46c3-45f6-a801-50b551911991",
+          "name": "Create New User",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "api",
+                "dev",
+                "example",
+                "com"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.1",
+                "system": true
+              },
+              {
+                "key": "Accept",
+                "value": "*/*",
+                "system": true
+              },
+              {
+                "key": "Cache-Control",
+                "value": "no-cache",
+                "system": true
+              },
+              {
+                "key": "Postman-Token",
+                "value": "2b7b68cf-24fe-4cbe-b655-0e97247ab909",
+                "system": true
+              },
+              {
+                "key": "Host",
+                "value": "api.dev.example.com",
+                "system": true
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br",
+                "system": true
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive",
+                "system": true
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"newuser_1753801990\",\n    \"email\": \"newuser1753801990@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"User created successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        "cursor": {
+          "ref": "48b3bd50-15b6-47ce-9ca3-1a6a4e90c1db",
+          "length": 6,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "dec0d9a1-498a-474e-a92e-a4f596c8ad06"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status code is 201",
+          "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+          "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:4)",
+          "checksum": "9c87aa6cd9a42006967578186e3b65ef",
+          "id": "0578acc3-c0a9-484c-a405-a2b5b1f0a431",
+          "timestamp": 1753802011656,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 4,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "143aaa65-46c3-45f6-a801-50b551911991",
+          "name": "Create New User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"User created successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                  "});"
+                ],
+                "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "b0deedce-de2b-4213-a617-6ca162a71a2f",
+          "name": "User Management",
+          "item": [
+            {
+              "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+              "name": "Get All Users",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c807ef76-7410-439a-a026-e000523d4590",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Each user has required fields\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    jsonData.forEach(function(user) {",
+                      "        pm.expect(user).to.have.property('id');",
+                      "        pm.expect(user).to.have.property('username');",
+                      "        pm.expect(user).to.have.property('email');",
+                      "    });",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "143aaa65-46c3-45f6-a801-50b551911991",
+              "name": "Create New User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"User created successfully\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+              "name": "Update User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+                }
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+              "name": "Delete User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {",
+                      "    pm.response.to.have.status(204);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "48b3bd50-15b6-47ce-9ca3-1a6a4e90c1db",
+          "length": 6,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "dec0d9a1-498a-474e-a92e-a4f596c8ad06",
+          "scriptId": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+          "execution": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+        }
+      },
+      {
+        "error": {
+          "name": "JSONError",
+          "index": 1,
+          "test": "User created successfully",
+          "message": "\"undefined\" is not valid JSON",
+          "stack": "JSONError: \"undefined\" is not valid JSON\n   at Object.eval sandbox-script.js:2:4)",
+          "checksum": "2502b1b5410e909b3e450e80651a1209",
+          "id": "47da1449-d1d2-4345-be8b-e9de619c48e4",
+          "timestamp": 1753802011658,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 2,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 4,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:1 in test-script",
+        "source": {
+          "id": "143aaa65-46c3-45f6-a801-50b551911991",
+          "name": "Create New User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"User created successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                  "});"
+                ],
+                "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "b0deedce-de2b-4213-a617-6ca162a71a2f",
+          "name": "User Management",
+          "item": [
+            {
+              "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+              "name": "Get All Users",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c807ef76-7410-439a-a026-e000523d4590",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Each user has required fields\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    jsonData.forEach(function(user) {",
+                      "        pm.expect(user).to.have.property('id');",
+                      "        pm.expect(user).to.have.property('username');",
+                      "        pm.expect(user).to.have.property('email');",
+                      "    });",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "143aaa65-46c3-45f6-a801-50b551911991",
+              "name": "Create New User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"User created successfully\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+              "name": "Update User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+                }
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+              "name": "Delete User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {",
+                      "    pm.response.to.have.status(204);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "48b3bd50-15b6-47ce-9ca3-1a6a4e90c1db",
+          "length": 6,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "dec0d9a1-498a-474e-a92e-a4f596c8ad06",
+          "scriptId": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+          "execution": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+        }
+      },
+      {
+        "error": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443,
+          "name": "Error",
+          "message": "connect ETIMEDOUT 125.235.4.59:443",
+          "stack": "Error: connect ETIMEDOUT 125.235.4.59:443\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1606:16)",
+          "checksum": "37e772173f271bfeb6a881787b575968",
+          "id": "f3c9b5c3-adf8-4ed0-bc13-c77b1890b450",
+          "timestamp": 1753802033619,
+          "stacktrace": [
+            {
+              "fileName": "node:net",
+              "lineNumber": 1606,
+              "functionName": "TCPConnectWrap.afterConnect [as oncomplete]",
+              "typeName": "TCPConnectWrap",
+              "methodName": "afterConnect [as oncomplete]",
+              "columnNumber": 16,
+              "native": false
+            }
+          ]
+        },
+        "at": "request",
+        "source": {
+          "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+          "name": "Update User",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "api",
+                "users",
+                "123"
+              ],
+              "host": [
+                "api",
+                "dev",
+                "example",
+                "com"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.1",
+                "system": true
+              },
+              {
+                "key": "Accept",
+                "value": "*/*",
+                "system": true
+              },
+              {
+                "key": "Cache-Control",
+                "value": "no-cache",
+                "system": true
+              },
+              {
+                "key": "Postman-Token",
+                "value": "87871f0c-c94c-4d6b-9ab5-2acfad9daf0f",
+                "system": true
+              },
+              {
+                "key": "Host",
+                "value": "api.dev.example.com",
+                "system": true
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br",
+                "system": true
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive",
+                "system": true
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        "cursor": {
+          "ref": "acb70cce-a1d4-43cb-b673-c1b9b67faa03",
+          "length": 6,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "c72fb983-6400-4681-ac02-bac56a7e676d"
+        }
+      },
+      {
+        "error": {
+          "errno": -4039,
+          "code": "ETIMEDOUT",
+          "syscall": "connect",
+          "address": "125.235.4.59",
+          "port": 443,
+          "name": "Error",
+          "message": "connect ETIMEDOUT 125.235.4.59:443",
+          "stack": "Error: connect ETIMEDOUT 125.235.4.59:443\n    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1606:16)",
+          "checksum": "37e772173f271bfeb6a881787b575968",
+          "id": "5444a578-04f0-4711-b866-ba8b682f9c66",
+          "timestamp": 1753802055649,
+          "stacktrace": [
+            {
+              "fileName": "node:net",
+              "lineNumber": 1606,
+              "functionName": "TCPConnectWrap.afterConnect [as oncomplete]",
+              "typeName": "TCPConnectWrap",
+              "methodName": "afterConnect [as oncomplete]",
+              "columnNumber": 16,
+              "native": false
+            }
+          ]
+        },
+        "at": "request",
+        "source": {
+          "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+          "name": "Delete User",
+          "request": {
+            "url": {
+              "protocol": "https",
+              "path": [
+                "api",
+                "users",
+                "123"
+              ],
+              "host": [
+                "api",
+                "dev",
+                "example",
+                "com"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dev"
+              },
+              {
+                "key": "User-Agent",
+                "value": "PostmanRuntime/7.39.1",
+                "system": true
+              },
+              {
+                "key": "Accept",
+                "value": "*/*",
+                "system": true
+              },
+              {
+                "key": "Cache-Control",
+                "value": "no-cache",
+                "system": true
+              },
+              {
+                "key": "Postman-Token",
+                "value": "951d7e3f-6e96-488c-8b6e-0c5435ae3c55",
+                "system": true
+              },
+              {
+                "key": "Host",
+                "value": "api.dev.example.com",
+                "system": true
+              },
+              {
+                "key": "Accept-Encoding",
+                "value": "gzip, deflate, br",
+                "system": true
+              },
+              {
+                "key": "Connection",
+                "value": "keep-alive",
+                "system": true
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        "cursor": {
+          "ref": "a5e485eb-376c-4fc8-a05f-ac5562c20ecb",
+          "length": 6,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "dbaae661-1cd2-49ff-8049-ae340d1e806a"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status code is 204",
+          "message": "expected PostmanResponse{ …(5) } to have property 'code'",
+          "stack": "AssertionError: expected PostmanResponse{ …(5) } to have property 'code'\n   at Object.eval sandbox-script.js:1:6)",
+          "checksum": "9b8fd25ce57f900e75008748b6b76c07",
+          "id": "ac2db1f3-da97-4cba-95b0-c40b79caad1f",
+          "timestamp": 1753802055675,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 6,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+          "name": "Delete User",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "123"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth_token}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ],
+                "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "b0deedce-de2b-4213-a617-6ca162a71a2f",
+          "name": "User Management",
+          "item": [
+            {
+              "id": "5a484fe9-45b0-4252-b40f-a6659dff51f3",
+              "name": "Get All Users",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c807ef76-7410-439a-a026-e000523d4590",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Response is an array\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Each user has required fields\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    jsonData.forEach(function(user) {",
+                      "        pm.expect(user).to.have.property('id');",
+                      "        pm.expect(user).to.have.property('username');",
+                      "        pm.expect(user).to.have.property('email');",
+                      "    });",
+                      "});"
+                    ],
+                    "_lastExecutionId": "c83f9909-d25a-47d4-83dd-5991313142b1"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "143aaa65-46c3-45f6-a801-50b551911991",
+              "name": "Create New User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"username\": \"newuser_{{$timestamp}}\",\n    \"email\": \"newuser{{$timestamp}}@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "69c0133b-cb59-43b6-8112-e0caade7a2b5",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "pm.test(\"User created successfully\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.eql('User created successfully');",
+                      "});"
+                    ],
+                    "_lastExecutionId": "d59a031e-7e8a-4e6d-9c3d-ce7244c1855c"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "af591455-0bbb-4c4e-82bd-c1cf5d0e421d",
+              "name": "Update User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"updated@example.com\",\n    \"role\": \"admin\"\n}"
+                }
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "f9f5e314-ef3b-4c52-b331-cc125bf14c5b",
+              "name": "Delete User",
+              "request": {
+                "url": {
+                  "path": [
+                    "api",
+                    "users",
+                    "123"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth_token}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 204\", function () {",
+                      "    pm.response.to.have.status(204);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "a5e485eb-376c-4fc8-a05f-ac5562c20ecb",
+          "length": 6,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "dbaae661-1cd2-49ff-8049-ae340d1e806a",
+          "scriptId": "f12cad56-a972-418e-bfb4-d93abb48e1ba",
+          "execution": "5024aafa-0f60-4da0-a67e-b53181d8a284"
+        }
+      }
+    ],
+    "error": null
+  }
+}

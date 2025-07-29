@@ -31,5 +31,10 @@ export const collectionsAPI = {
   // Delete a collection
   delete(filename) {
     return api.delete(`/collections/${filename}`)
+  },
+
+  // Clone a collection
+  clone(filename) {
+    return api.post(`/collections/${filename}/clone`)
   }
 }

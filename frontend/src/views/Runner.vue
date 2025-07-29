@@ -93,6 +93,14 @@
             <div class="mt-3">
               <small class="text-muted">Duration: {{ lastRun.duration }}ms</small>
             </div>
+            <div class="d-grid mt-3" v-if="lastResultId">
+              <button 
+                class="btn btn-primary" 
+                @click="router.push('/results')"
+              >
+                <i class="bi bi-file-earmark-bar-graph"></i> View Detailed Results
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -160,9 +168,13 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { collectionsAPI } from '../services/collections'
 import { environmentsAPI } from '../services/environments'
+import { settingsAPI } from '../services/settings'
 import api from '../services/api'
+
+const router = useRouter()
 
 const collections = ref([])
 const environments = ref([])
@@ -172,16 +184,23 @@ const iterations = ref(1)
 const isRunning = ref(false)
 const logs = ref([])
 const lastRun = ref(null)
+const lastResultId = ref(null)
 
 const loadData = async () => {
   try {
-    const [collectionsRes, environmentsRes] = await Promise.all([
+    const [collectionsRes, environmentsRes, settingsRes] = await Promise.all([
       collectionsAPI.getAll(),
-      environmentsAPI.getAll()
+      environmentsAPI.getAll(),
+      settingsAPI.get()
     ])
     
     collections.value = collectionsRes.data
     environments.value = environmentsRes.data
+    
+    // Auto-select default collection if set
+    if (settingsRes.data.defaultCollection && !selectedCollection.value) {
+      selectedCollection.value = settingsRes.data.defaultCollection
+    }
   } catch (error) {
     console.error('Error loading data:', error)
   }
@@ -193,8 +212,15 @@ const runCollection = async () => {
   isRunning.value = true
   logs.value = []
   lastRun.value = null
+  lastResultId.value = null
   
   try {
+    console.log('Running collection:', {
+      collectionFile: selectedCollection.value,
+      environmentFile: selectedEnvironment.value,
+      iterationCount: iterations.value
+    })
+    
     const response = await fetch(`${api.defaults.baseURL}/newman/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -205,39 +231,51 @@ const runCollection = async () => {
       })
     })
     
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
+    let buffer = ''
     
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
       
-      const chunk = decoder.decode(value)
-      const lines = chunk.split('\n')
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
       
       for (const line of lines) {
-        if (line.startsWith('data: ')) {
+        const trimmedLine = line.trim()
+        if (trimmedLine.startsWith('data: ')) {
           try {
-            const data = JSON.parse(line.slice(6))
-            logs.value.push(data)
-            
-            if (data.type === 'complete') {
-              lastRun.value = {
-                passed: data.testResults.passed,
-                failed: data.testResults.failed,
-                total: data.testResults.total,
-                duration: data.duration
+            const jsonStr = trimmedLine.slice(6)
+            if (jsonStr) {
+              const data = JSON.parse(jsonStr)
+              console.log('Received data:', data)
+              logs.value.push(data)
+              
+              if (data.type === 'complete') {
+                lastRun.value = {
+                  passed: data.testResults.passed,
+                  failed: data.testResults.failed,
+                  total: data.testResults.total,
+                  duration: data.duration
+                }
+                lastResultId.value = data.resultId
+              }
+              
+              // Auto-scroll to bottom
+              await nextTick()
+              const logContainer = document.querySelector('.log-container')
+              if (logContainer) {
+                logContainer.scrollTop = logContainer.scrollHeight
               }
             }
-            
-            // Auto-scroll to bottom
-            await nextTick()
-            const logContainer = document.querySelector('.log-container')
-            if (logContainer) {
-              logContainer.scrollTop = logContainer.scrollHeight
-            }
           } catch (e) {
-            console.error('Error parsing SSE data:', e)
+            console.error('Error parsing SSE data:', e, 'Line:', trimmedLine)
           }
         }
       }

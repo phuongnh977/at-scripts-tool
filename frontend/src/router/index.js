@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import Collections from '../views/Collections.vue'
 import Environments from '../views/Environments.vue'
 import Runner from '../views/Runner.vue'
+import Results from '../views/Results.vue'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/runner',
     name: 'Runner',
     component: Runner
+  },
+  {
+    path: '/results',
+    name: 'Results',
+    component: Results
   }
 ]
 

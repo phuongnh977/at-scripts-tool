@@ -30,6 +30,11 @@
                 <i class="bi bi-globe"></i> Environments
               </router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/results" exact-active-class="active">
+                <i class="bi bi-file-earmark-bar-graph"></i> Results
+              </router-link>
+            </li>
           </ul>
         </div>
       </div>

@@ -16,6 +16,9 @@
             <router-link class="btn btn-outline-primary btn-lg" to="/collections" role="button">
               <i class="bi bi-collection"></i> Manage Collections
             </router-link>
+            <router-link class="btn btn-outline-primary btn-lg" to="/environments" role="button">
+              <i class="bi bi-gear"></i> Manage Environments
+            </router-link>
           </div>
         </div>
       </div>

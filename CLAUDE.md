@@ -12,9 +12,9 @@ Newman AT is a modern Single Page Application (SPA) that provides a user-friendl
 - **Framework**: Vue 3 with Composition API
 - **Build Tool**: Vite
 - **Routing**: Vue Router 4
-- **State Management**: Pinia
 - **UI Framework**: Bootstrap 5, Bootstrap Icons
 - **HTTP Client**: Axios
+- **Modal Management**: Bootstrap native modals
 
 ### Backend
 - **Runtime**: Node.js
@@ -56,9 +56,9 @@ newman-at/
 ├── frontend/               # Vue 3 SPA
 │   ├── src/
 │   │   ├── components/    # Reusable Vue components
-│   │   ├── views/         # Page components (Home, Collections, Environments, Runner)
+│   │   ├── views/         # Page components (Home, Collections, Environments, Runner, Results)
 │   │   ├── router/        # Vue Router configuration
-│   │   ├── services/      # API service layer (api.js, collections.js, environments.js, newman.js)
+│   │   ├── services/      # API service layer (api.js, collections.js, environments.js, newman.js, results.js, settings.js)
 │   │   ├── App.vue        # Root component with layout
 │   │   └── main.js        # Application entry point
 │   ├── vite.config.js     # Vite configuration with API proxy
@@ -66,11 +66,15 @@ newman-at/
 │
 ├── backend/               # Express API server
 │   ├── routes/            # API route handlers
-│   │   ├── collections.js # CRUD operations for collections
-│   │   ├── environments.js # CRUD operations for environments
-│   │   └── newman.js      # Newman execution with SSE streaming
+│   │   ├── collections.js # CRUD operations + clone for collections
+│   │   ├── environments.js # CRUD operations + clone for environments
+│   │   ├── newman.js      # Newman execution with SSE streaming
+│   │   ├── results.js     # Test results management
+│   │   └── settings.js    # Application settings (default collection)
 │   ├── collections/       # Stored collection JSON files
 │   ├── environments/      # Stored environment JSON files
+│   ├── results/           # Stored test result files
+│   ├── settings.json      # Application settings file
 │   ├── server.js          # Express server setup
 │   ├── .env              # Environment variables
 │   └── package.json
@@ -98,18 +102,33 @@ newman-at/
 
 All endpoints are prefixed with `/api`:
 
+#### Health & Settings
 - `GET /api/health` - Health check
+- `GET /api/settings` - Get application settings
+- `PUT /api/settings/default-collection` - Set default collection
+
+#### Collections
 - `GET /api/collections` - List all collections
 - `GET /api/collections/:filename` - Get specific collection
 - `POST /api/collections/upload` - Upload new collection
 - `PUT /api/collections/:filename` - Update collection
 - `DELETE /api/collections/:filename` - Delete collection
+- `POST /api/collections/:filename/clone` - Clone a collection
+
+#### Environments
 - `GET /api/environments` - List all environments
 - `GET /api/environments/:filename` - Get specific environment
 - `POST /api/environments/upload` - Upload new environment
 - `PUT /api/environments/:filename` - Update environment
 - `DELETE /api/environments/:filename` - Delete environment
+- `POST /api/environments/:filename/clone` - Clone an environment
+
+#### Test Execution & Results
 - `POST /api/newman/run` - Execute collection with SSE streaming
+- `GET /api/results` - List all test results
+- `GET /api/results/:id` - Get detailed result
+- `DELETE /api/results/:id` - Delete specific result
+- `DELETE /api/results` - Delete all results
 
 ### Development Notes
 
@@ -119,20 +138,26 @@ All endpoints are prefixed with `/api`:
 - Collections and environments are validated as JSON before saving
 - Newman execution streams results in real-time using SSE
 - CORS is enabled for cross-origin requests during development
+- Test results are stored persistently with atomic file writes
+- SSE connections include heartbeat to prevent timeouts
+- Error handling includes automatic cleanup of corrupted files
 
 ### Frontend Components
 
-- **Home.vue**: Landing page with stats and navigation
-- **Collections.vue**: Collection management with upload, view, edit, delete
-- **Environments.vue**: Environment variable management
-- **Runner.vue**: Test execution interface with real-time logs
-- **App.vue**: Main layout with navigation and router outlet
+- **Home.vue**: Landing page with stats and quick action buttons
+- **Collections.vue**: Collection management with upload, view, edit, delete, clone, and default selection
+- **Environments.vue**: Environment variable management with full CRUD and clone functionality
+- **Runner.vue**: Test execution interface with real-time SSE logs and auto-select default collection
+- **Results.vue**: Comprehensive test results viewer with detailed assertions and response data
+- **App.vue**: Main layout with Bootstrap navbar and router outlet
 
 ### Backend Routes
 
-- **collections.js**: Handles file operations for collection JSON files
-- **environments.js**: Handles file operations for environment JSON files
-- **newman.js**: Executes Newman with SSE streaming for real-time updates
+- **collections.js**: Handles file operations for collection JSON files including clone functionality
+- **environments.js**: Handles file operations for environment JSON files including clone functionality
+- **newman.js**: Executes Newman with SSE streaming, saves results, handles errors gracefully
+- **results.js**: Manages test result files with corruption detection and cleanup
+- **settings.js**: Manages application settings including default collection preference
 
 ### Standard Workflow
 
@@ -146,3 +171,41 @@ All endpoints are prefixed with `/api`:
 8. Update the project-roadmap.md file if you discover new tasks or complete major features
 9. DO NOT BE LAZY. NEVER BE LAZY. IF THERE IS A BUG FIND THE ROOT CAUSE AND FIX IT. NO TEMPORARY FIXES. YOU ARE A SENIOR DEVELOPER. NEVER BE LAZY
 10. MAKE ALL FIXES AND CODE CHANGES AS SIMPLE AS HUMANLY POSSIBLE. THEY SHOULD ONLY IMPACT NECESSARY CODE RELEVANT TO THE TASK AND NOTHING ELSE. IT SHOULD IMPACT AS LITTLE CODE AS POSSIBLE. YOUR GOAL IS TO NOT INTRODUCE ANY BUGS. IT'S ALL ABOUT SIMPLICITY
+
+### Recent Improvements
+
+1. **Test Results Management**
+   - Added persistent storage of test execution results
+   - Created detailed results viewer with HTML-reporter-like interface
+   - Implemented atomic file writes to prevent corruption
+   - Added automatic cleanup of corrupted result files
+
+2. **Default Collection Feature**
+   - Added ability to set a default collection from Collections page
+   - Runner auto-selects default collection on load
+   - Visual indicators (star badges) show default status
+   - Settings persist across sessions
+
+3. **Clone Functionality**
+   - One-click cloning for collections and environments
+   - Automatic renaming with " - Copy" suffix
+   - New unique IDs generated for cloned items
+   - Useful for creating variations and templates
+
+4. **SSE Improvements**
+   - Fixed connection reset issues
+   - Added heartbeat to keep connections alive
+   - Improved error handling and streaming
+   - Better buffering for chunked data
+
+5. **UI Enhancements**
+   - Added tooltips to action buttons
+   - Improved button grouping and spacing
+   - Added "Manage Environments" button to home page
+   - Better visual feedback for all operations
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

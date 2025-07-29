@@ -73,18 +73,28 @@
                         <button 
                           class="btn btn-sm btn-info" 
                           @click="viewEnvironment(environment)"
+                          title="View"
                         >
                           <i class="bi bi-eye"></i>
                         </button>
                         <button 
                           class="btn btn-sm btn-warning" 
                           @click="editEnvironment(environment)"
+                          title="Edit"
                         >
                           <i class="bi bi-pencil"></i>
                         </button>
                         <button 
+                          class="btn btn-sm btn-primary" 
+                          @click="cloneEnvironment(environment)"
+                          title="Clone"
+                        >
+                          <i class="bi bi-files"></i>
+                        </button>
+                        <button 
                           class="btn btn-sm btn-danger" 
                           @click="deleteEnvironment(environment)"
+                          title="Delete"
                         >
                           <i class="bi bi-trash"></i>
                         </button>
@@ -272,6 +282,17 @@ const deleteEnvironment = async (environment) => {
   } catch (error) {
     console.error('Error deleting environment:', error)
     alert('Failed to delete environment')
+  }
+}
+
+const cloneEnvironment = async (environment) => {
+  try {
+    const response = await environmentsAPI.clone(environment.filename)
+    alert(`Environment cloned successfully as "${response.data.name}"!`)
+    await loadEnvironments()
+  } catch (error) {
+    console.error('Error cloning environment:', error)
+    alert('Failed to clone environment')
   }
 }
 

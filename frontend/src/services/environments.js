@@ -31,5 +31,10 @@ export const environmentsAPI = {
   // Delete an environment
   delete(filename) {
     return api.delete(`/environments/${filename}`)
+  },
+
+  // Clone an environment
+  clone(filename) {
+    return api.post(`/environments/${filename}/clone`)
   }
 }

@@ -20,10 +20,14 @@ app.use(fileUpload({
 const collectionsRouter = require('./routes/collections');
 const environmentsRouter = require('./routes/environments');
 const newmanRouter = require('./routes/newman');
+const resultsRouter = require('./routes/results');
+const settingsRouter = require('./routes/settings');
 
 app.use('/api/collections', collectionsRouter);
 app.use('/api/environments', environmentsRouter);
 app.use('/api/newman', newmanRouter);
+app.use('/api/results', resultsRouter);
+app.use('/api/settings', settingsRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -63,7 +63,12 @@
                 </thead>
                 <tbody>
                   <tr v-for="collection in collections" :key="collection.filename">
-                    <td>{{ collection.name }}</td>
+                    <td>
+                      {{ collection.name }}
+                      <span v-if="collection.filename === defaultCollection" class="badge bg-success ms-2">
+                        <i class="bi bi-star-fill"></i> Default
+                      </span>
+                    </td>
                     <td>{{ collection.description || 'No description' }}</td>
                     <td>{{ formatDate(collection.updatedAt) }}</td>
                     <td>
@@ -71,18 +76,44 @@
                         <button 
                           class="btn btn-sm btn-info" 
                           @click="viewCollection(collection)"
+                          title="View"
                         >
                           <i class="bi bi-eye"></i>
                         </button>
                         <button 
                           class="btn btn-sm btn-warning" 
                           @click="editCollection(collection)"
+                          title="Edit"
                         >
                           <i class="bi bi-pencil"></i>
                         </button>
                         <button 
+                          v-if="collection.filename !== defaultCollection"
+                          class="btn btn-sm btn-success" 
+                          @click="setAsDefault(collection)"
+                          title="Set as Default"
+                        >
+                          <i class="bi bi-star"></i>
+                        </button>
+                        <button 
+                          v-else
+                          class="btn btn-sm btn-secondary" 
+                          @click="removeDefault()"
+                          title="Remove Default"
+                        >
+                          <i class="bi bi-star-fill"></i>
+                        </button>
+                        <button 
+                          class="btn btn-sm btn-primary" 
+                          @click="cloneCollection(collection)"
+                          title="Clone"
+                        >
+                          <i class="bi bi-files"></i>
+                        </button>
+                        <button 
                           class="btn btn-sm btn-danger" 
                           @click="deleteCollection(collection)"
+                          title="Delete"
                         >
                           <i class="bi bi-trash"></i>
                         </button>
@@ -145,6 +176,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { collectionsAPI } from '../services/collections'
+import { settingsAPI } from '../services/settings'
 import { Modal } from 'bootstrap'
 
 const collections = ref([])
@@ -156,12 +188,17 @@ const editedContent = ref('')
 const currentFilename = ref('')
 const fileInput = ref(null)
 const modalElement = ref(null)
+const defaultCollection = ref(null)
 let collectionModal = null
 
 const loadCollections = async () => {
   try {
-    const response = await collectionsAPI.getAll()
-    collections.value = response.data
+    const [collectionsRes, settingsRes] = await Promise.all([
+      collectionsAPI.getAll(),
+      settingsAPI.get()
+    ])
+    collections.value = collectionsRes.data
+    defaultCollection.value = settingsRes.data.defaultCollection
   } catch (error) {
     console.error('Error loading collections:', error)
     alert('Failed to load collections')
@@ -242,6 +279,39 @@ const deleteCollection = async (collection) => {
   } catch (error) {
     console.error('Error deleting collection:', error)
     alert('Failed to delete collection')
+  }
+}
+
+const cloneCollection = async (collection) => {
+  try {
+    const response = await collectionsAPI.clone(collection.filename)
+    alert(`Collection cloned successfully as "${response.data.name}"!`)
+    await loadCollections()
+  } catch (error) {
+    console.error('Error cloning collection:', error)
+    alert('Failed to clone collection')
+  }
+}
+
+const setAsDefault = async (collection) => {
+  try {
+    await settingsAPI.setDefaultCollection(collection.filename)
+    defaultCollection.value = collection.filename
+    alert(`"${collection.name}" set as default collection!`)
+  } catch (error) {
+    console.error('Error setting default collection:', error)
+    alert('Failed to set default collection')
+  }
+}
+
+const removeDefault = async () => {
+  try {
+    await settingsAPI.setDefaultCollection(null)
+    defaultCollection.value = null
+    alert('Default collection removed!')
+  } catch (error) {
+    console.error('Error removing default collection:', error)
+    alert('Failed to remove default collection')
   }
 }
 
